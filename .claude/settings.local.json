@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(rmdir \"c:/Users/maria/mi-app-user-with-next-js/src/app/api/users/[id]\")",
+      "Bash(rm -rf \"c:/Users/maria/mi-app-user-with-next-js/src/app/api/users/[id]\")",
+      "Bash(curl -s http://localhost:3000/api/users)",
+      "Bash(npx next *)",
+      "Bash(curl -sv http://localhost:3000/api/users)",
+      "Bash(node -e \"const pkg = require\\('./node_modules/next/package.json'\\); console.log\\(pkg.version\\)\")",
+      "Bash(curl -s http://localhost:3000/api/users/1)",
+      "Bash(curl -s http://localhost:3000/api/users/5)",
+      "Bash(npx tsc *)"
+    ]
+  }
+}
