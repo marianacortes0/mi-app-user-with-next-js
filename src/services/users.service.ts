@@ -4,11 +4,15 @@ import type { ApiResponse, User, UserPayload } from "@/types/user";
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
   const response = await fetch(url, {
     ...init,
-    headers: { "content-type": "application/json", ...init?.headers },
+    headers: {
+      "Content-Type": "application/json",
+      ...init?.headers,
+    },
   });
 
   const text = await response.text();
-  let body: unknown = null;
+
+  let body: any = null;
 
   try {
     body = text ? JSON.parse(text) : null;
@@ -16,14 +20,14 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
     throw new Error("La API devolvió un JSON inválido");
   }
 
+  // ❌ Manejo de error HTTP
   if (!response.ok) {
-    const err = body as { message?: string } | null;
     throw new Error(
-      err?.message ?? `La api respondió con estado ${response.status}.`,
+      body?.message ?? `La API respondió con estado ${response.status}`
     );
   }
 
-  // Caso: { success, data }
+  // ✅ Caso estándar: { success, data, message }
   if (body && typeof body === "object" && "data" in body) {
     const apiBody = body as ApiResponse<T>;
 
@@ -34,42 +38,35 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
     return apiBody.data;
   }
 
-  // ⚠️ fallback controlado
+  // ⚠️ Fallback (por si algún endpoint no sigue el estándar)
   return body as T;
 }
 
 export const userService = {
   async getAll(): Promise<User[]> {
-    const data = await request<User[]>(USERS_API_URL);
-
-    // 🔥 VALIDACIÓN CLAVE
-    if (!Array.isArray(data)) {
-      console.error("❌ getAll NO devolvió array:", data);
-      return [];
-    }
-
-    return data;
+    // ✅ Aquí ya viene el array limpio desde request
+    return request<User[]>(USERS_API_URL);
   },
 
-  getById(id: number) {
+  getById(id: number): Promise<User> {
     return request<User>(`${USERS_API_URL}/${id}`);
   },
 
-  create(user: UserPayload) {
+  create(user: UserPayload): Promise<User> {
     return request<User>(USERS_API_URL, {
       method: "POST",
       body: JSON.stringify(user),
     });
   },
 
-  update(id: number, user: UserPayload) {
+  update(id: number, user: UserPayload): Promise<User> {
     return request<User>(`${USERS_API_URL}/${id}`, {
       method: "PUT",
       body: JSON.stringify(user),
     });
   },
 
-  delete(id: number) {
+  delete(id: number): Promise<void> {
     return request<void>(`${USERS_API_URL}/${id}`, {
       method: "DELETE",
     });
