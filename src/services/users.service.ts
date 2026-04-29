@@ -19,7 +19,7 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
   if (!response.ok) {
     const err = body as { message?: string } | null;
     throw new Error(
-      err?.message ?? `La api respondió con estado ${response.status}.`
+      err?.message ?? `La api respondió con estado ${response.status}.`,
     );
   }
 
@@ -40,7 +40,7 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
 
 export const userService = {
   async getAll(): Promise<User[]> {
-    const data = await request<unknown>(USERS_API_URL);
+    const data = await request<User[]>(USERS_API_URL);
 
     // 🔥 VALIDACIÓN CLAVE
     if (!Array.isArray(data)) {
